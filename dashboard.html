@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .glow { box-shadow: 0 4px 10px rgba(0, 255, 170, 0.6); }
+        .mobile-menu.closed { display: none; }
+        .mobile-menu { display: none; }
+        .mobile-menu.open { display: block; }
+        .nav-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .nav-link { transition: color 0.3s; }
+        .nav-link:hover { color: #00FFFF; }
+        .font-cursive { font-family: 'Dancing Script', cursive; }
+        .glow-text { text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);}
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container { padding-left: 1rem; padding-right: 1rem; }
+            .text-3xl { font-size: 1.5rem; }
+            .text-xl { font-size: 1.125rem; }
+            .text-lg { font-size: 1rem; }
+        }
+        @media (max-width: 640px) {
+        .glow-text { font-size: 1.75rem; }
+    }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white w-full min-h-screen flex flex-col items-center p-4 sm:p-6">
+
+    <div id="particles-js" class="absolute inset-0 z-0"></div>
+
+    <!-- Professional Navbar -->
+    <nav class="nav-glass w-full fixed top-0 left-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-2 sm:space-x-3">
+                    <span class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-300 to-cyan-100 bg-clip-text text-transparent">💲CryptoPortfolio</span>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#dashboard" class="nav-link text-gray-200 text-sm">Dashboard</a>
+                    <a href="#transactions" class="nav-link text-gray-200 text-sm">Transactions</a>
+                    <button id="logoutBtn" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl transition-all glow text-sm glow hover:scale-105 transition-all duration-200">Logout</button>
+                </div>
+
+                <!-- Hamburger Button for Mobile -->
+                <button id="menuBtn" class="md:hidden text-cyan-200 hover:text-cyan-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path class="menu-bars" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu closed md:hidden">
+                <div class="container mx-auto px-4 py-4 space-y-3">
+                    <a href="#dashboard" class="block px-4 py-2 text-cyan-200 hover:text-white hover:bg-cyan-800/50 rounded-xl">Dashboard</a>
+                    <a href="#transactions" class="block px-4 py-2 text-cyan-200 hover:text-white hover:bg-cyan-800/50 rounded-xl">Transactions</a>
+                    <button id="mobileLogoutBtn" class="block w-full px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white text-center rounded-xl glow">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Message -->
+    <div id="welcome-message" class="text-2xl sm:text-3xl md:text-4xl font-cursive tracking-widest mt-24 sm:mt-28 mb-6 text-cyan-300 bg-white/5 backdrop-blur-sm rounded-lg px-6 py-3 shadow-lg text-center glow transition-all duration-300 hover:text-cyan-200"></div>
+
+    <!-- Portfolio Overview -->
+<div class="w-full max-w-5xl mt-8 flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="dashboard">
+    <div class="w-full p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-cyan-500/20 flex items-center gap-4">
+        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full p-2 shadow-[0_0_15px_rgba(0,255,255,0.5)]">
+            <svg class="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm2-10h-4a2 2 0 00-2 2v2a2 2 0 002 2h4a2 2 0 002-2v-2a2 2 0 00-2-2z"/>
+            </svg>
+        </div>
+        <div>
+            <h2 class="text-lg md:text-xl font-bold text-cyan-200 tracking-wide">Total Balance</h2>
+            <p class="text-3xl md:text-4xl font-semibold mt-2 text-white glow-text" id="totalBalance">₹0</p>
+        </div>
+    </div>
+    <div class="w-full p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-cyan-500/20 flex items-center gap-4">
+        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full p-2 shadow-[0_0_15px_rgba(0,255,255,0.5)]">
+            <svg class="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5l4 4h-3v4a2 2 0 01-2 2 2 2 0 01-2-2v-4H7l4-4h2z"/>
+            </svg>
+        </div>
+        <div>
+            <h2 class="text-lg md:text-xl font-bold text-cyan-200 tracking-wide">Profit/Loss</h2>
+            <p class="text-3xl md:text-4xl font-semibold mt-2 text-white glow-text" id="profitLoss">₹0</p>
+        </div>
+    </div>
+    <div class="w-full p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-cyan-500/20 sm:col-span-2 lg:col-span-1">
+        <h2 class="text-lg md:text-xl font-bold text-cyan-200 tracking-wide">Portfolio Breakdown</h2>
+        <canvas id="portfolioPieChart" class="mt-3 w-full h-48 sm:h-56"></canvas>
+    </div>
+</div>
+
+    <!-- Holdings Table -->
+    <div class="w-full max-w-5xl mt-6">
+        <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-300 to-cyan-100 bg-clip-text text-transparent mb-4">Your Holdings</h2>
+        <div class="bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-xl shadow-lg overflow-x-auto">
+            <table class="w-full min-w-[600px] text-sm sm:text-base">
+                <thead>
+                    <tr class="text-cyan-200 text-base sm:text-lg">
+                        <th class="p-2 sm:p-3 text-left">Coin</th>
+                        <th class="p-2 sm:p-3 text-left">Quantity</th>
+                        <th class="p-2 sm:p-3 text-left">Buy Price</th>
+                        <th class="p-2 sm:p-3 text-left">Current Price</th>
+                        <th class="p-2 sm:p-3 text-left">Profit/Loss</th>
+                        <th class="p-2 sm:p-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="holdingsTable" class="text-gray-200">
+                    <!-- Crypto Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Crypto Button -->
+    <div class="mt-6">
+        <button class="bg-gradient-to-r from-green-400 to-blue-500 px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-xl text-white text-base sm:text-lg font-semibold glow hover:scale-105 transition-all duration-200" id="addCryptoBtn">+ Add Crypto</button>
+    </div>
+
+    <!-- Historical Price Chart -->
+    <div class="w-full max-w-5xl mt-6">
+        <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-300 to-cyan-100 bg-clip-text text-transparent mb-4">Historical Price Chart</h2>
+        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+            <select id="chartCoin" class="w-full p-2 sm:p-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base">
+                <option value="bitcoin" selected>Bitcoin (BTC)</option>
+                <option value="ethereum">Ethereum (ETH)</option>
+                <option value="dogecoin">Dogecoin (DOGE)</option>
+                <option value="cardano">Cardano (ADA)</option>
+                <option value="solana">Solana (SOL)</option>
+            </select>
+            <select id="timePeriod" class="w-full p-2 sm:p-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base">
+                <option value="1">Last 24 hours</option>
+                <option value="7" selected>Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+            </select>
+        </div>
+        <div class="bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-xl shadow-lg min-h-[300px] sm:min-h-[400px] relative">
+            <canvas id="cryptoPriceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="w-full max-w-5xl mt-8" id="transactions">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-300 to-cyan-100 bg-clip-text text-transparent mb-4 mt-6">Transaction History</h2>
+            <button id="exportHistoryBtn" class="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg text-white glow text-sm sm:text-base transition-all duration-200">Export History</button>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+            <select id="monthFilter" class="w-full p-2 sm:p-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base">
+                <option value="all" selected>All Months</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+            </select>
+            <select id="yearFilter" class="w-full p-2 sm:p-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base">
+                <option value="all" selected>All Years</option>
+                <!-- Years will be populated dynamically in JS -->
+            </select>
+            <button id="clearHistoryBtn" class="bg-red-500 px-3 py-1 rounded-lg text-white hover:bg-red-600 hover:scale-105 transition-all duration-200">Clear History</button>
+        </div>
+        <div class="bg-white/10 backdrop-blur-lg p-4 sm:p-6 rounded-xl shadow-lg overflow-x-auto">
+            <table class="w-full min-w-[600px] text-sm sm:text-base">
+                <thead>
+                    <tr class="text-cyan-200 text-base sm:text-lg">
+                        <th class="p-2 sm:p-3 text-left">Date</th>
+                        <th class="p-2 sm:p-3 text-left">Action</th>
+                        <th class="p-2 sm:p-3 text-left">Coin</th>
+                        <th class="p-2 sm:p-3 text-left">Amount</th>
+                        <th class="p-2 sm:p-3 text-left">Buy Price</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionHistory" class="text-gray-200">
+                    <!-- Transaction data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Crypto Modal -->
+    <div id="addCryptoModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-white/10 backdrop-blur-xl p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm text-white">
+            <h2 class="text-lg sm:text-xl font-bold text-cyan-300">Add Cryptocurrency</h2>
+            <select id="cryptoName" class="w-full p-2 sm:p-3 mt-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base">
+                <option value="bitcoin" selected>Bitcoin (BTC)</option>
+                <option value="ethereum">Ethereum (ETH)</option>
+                <option value="dogecoin">Dogecoin (DOGE)</option>
+                <option value="cardano">Cardano (ADA)</option>
+                <option value="solana">Solana (SOL)</option>
+            </select>
+            <input type="number" id="cryptoAmount" placeholder="Amount" class="w-full p-2 sm:p-3 mt-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base" step="0.0001" min="0">
+            <input type="number" id="buyPrice" placeholder="Buy Price (INR)" class="w-full p-2 sm:p-3 mt-3 rounded-lg bg-gray-800 text-white focus:outline-none text-sm sm:text-base" step="0.01" min="0">
+            <div class="mt-4 flex justify-between">
+                <button id="saveCryptoBtn" class="bg-green-500 px-3 sm:px-4 py-2 rounded-lg glow text-sm sm:text-base">Save</button>
+                <button id="closeModalBtn" class="bg-red-500 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+<footer class="w-full max-w-5xl mt-12 mb-6 bg-white/5 backdrop-blur-lg rounded-xl shadow-lg p-6 text-gray-300">
+    <p class="text-xs text-center mb-4">&copy; 2025 💲CryptoPortfolio. All rights reserved.</p>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <!-- Left Section: Branding -->
+        <div class="text-center md:text-left">
+            <h3 class="text-xl font-bold bg-gradient-to-r from-cyan-300 to-cyan-100 bg-clip-text text-transparent">💲CryptoPortfolio</h3>
+            <p class="text-sm mt-1">Empowering Wealth Creation</p>
+        </div>
+
+        <!-- Middle Section: Links -->
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm">
+            <a href="#privacy" class="hover:text-cyan-300 transition-colors duration-200">Privacy Policy</a>
+            <a href="#terms" class="hover:text-cyan-300 transition-colors duration-200">Terms of Service</a>
+            <a href="#contact" class="hover:text-cyan-300 transition-colors duration-200">Contact Us</a>
+        </div>
+
+        <!-- Right Section: Socials & Copyright -->
+        <div class="text-center md:text-right">
+            
+            <div class="flex justify-center md:justify-end gap-4 mb-2">
+                <a href="#" class="text-cyan-200 hover:text-cyan-100 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                </a>
+                <a href="#" class="text-cyan-200 hover:text-cyan-100 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                </a>
+                <a href="#" class="text-cyan-200 hover:text-cyan-100 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4a4 4 0 014-4h8a4 4 0 014 4v16a4 4 0 01-4 4H8a4 4 0 01-4-4V4zm5 5a3 3 0 100 6 3 3 0 000-6zm6-1a1 1 0 100 2 1 1 0 000-2zm-5-5a5 5 0 015 5v2h-2v-2a3 3 0 00-6 0v2H9v-2a5 5 0 015-5z"/></svg>
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Show Modal
+        document.getElementById("addCryptoBtn").addEventListener("click", () => {
+            document.getElementById("addCryptoModal").classList.remove("hidden");
+        });
+
+        // Close Modal
+        document.getElementById("closeModalBtn").addEventListener("click", () => {
+            document.getElementById("addCryptoModal").classList.add("hidden");
+            document.getElementById("cryptoAmount").value = "";
+            document.getElementById("buyPrice").value = "";
+        });
+    </script>
+    
+    <script>
+      particlesJS('particles-js', {
+        particles: {
+          number: { value: 50 },
+          color: { value: '#00FFFF' },
+          shape: { type: 'circle' },
+          opacity: { value: 0.5 },
+          size: { value: 3 },
+          move: { speed: 2 }
+        },
+        interactivity: {
+          events: { onhover: { enable: true, mode: 'repulse' } }
+        }
+      });
+    </script>
+
+    <script src="historicalChart.js"></script>
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
